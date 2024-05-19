@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Textstash{% endblock %}
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Check if there are any messages
+        if ($('.messages').children().length > 0) {
+            alert($('.messages').text());
+        }
+    });
+</script>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+        <h1 class="text-center">Read Stash</h1>
+        <div class="messages">
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="{{ message.tags }}"> {{ message }}</p>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_name">Title:</label><br>
+            {{ form.title }}
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

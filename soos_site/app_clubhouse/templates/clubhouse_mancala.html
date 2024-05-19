@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+
+{% block title %}Textstash{% endblock %}
+
+{% block content %}
+
+<h1> Mancala </h1>
+
+<div id="mancala-board" class="mancala-container"></div>
+<button class="centered-button" onclick="initBoard()">Reset!</button>
+<div id="win-container"></div>
+
+<style>
+    .store {
+        width: 200px;
+        height: 200px;
+        text-align: center;
+        align-content: center;
+        border: 2px solid black;
+        font-size: 18px;
+    }
+
+    .pit-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .row {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .row-reverse {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+    }
+
+    .pit {
+        width: 100px;
+        height: 100px;
+        text-align: center;
+        align-content: center;
+        border: 2px solid black;
+        font-size: 18px;
+    }
+
+    .pit:hover {
+        background-color: yellow;
+    }
+
+    .centered-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        margin: auto;
+        display: block;
+    }
+</style>
+
+<script>
+    var board;
+
+    function initBoard() {
+        board = {
+            turn: 0,
+            stores: Array(2).fill(0),
+            pits: [Array(6).fill(4), Array(6).fill(4)],
+        }
+        const container = document.getElementById("win-container");
+        container.innerHTML = "";
+        renderBoard();
+    }
+
+    function renderBoard() {
+        const container = document.getElementById("mancala-board");
+        container.innerHTML = "";
+
+        const storeP2 = document.createElement('div');
+        storeP2.classList.add('store')
+        storeP2.appendChild(document.createTextNode(board.stores[1]));
+        container.appendChild(storeP2);
+
+        const pitContainer = document.createElement('div');
+        pitContainer.classList.add('pit-container');
+
+        row = document.createElement('div');
+        row.classList.add('row-reverse');
+
+        const renderPits = (playerIndex, reversed) => {
+            const row = document.createElement('div');
+            row.classList.add(reversed ? 'row-reverse' : 'row');
+
+            for (let i = 0; i < 6; i++) {
+                const pit = document.createElement('div');
+                pit.classList.add('pit');
+                pit.dataset.turn = reversed ? 1 : 0;
+                pit.dataset.pitNum = i;
+                pit.addEventListener('click', function() {
+                    tryToPlayMove(this.dataset.turn, this.dataset.pitNum)
+                })
+                pit.appendChild(document.createTextNode(board.pits[playerIndex][i]));
+                row.appendChild(pit);
+                }
+            pitContainer.appendChild(row);
+        };
+
+        renderPits(1, true);
+        renderPits(0, false);
+        container.append(pitContainer);
+
+        const storeP1 = document.createElement('div');
+        storeP1.classList.add('store')
+        storeP1.appendChild(document.createTextNode(board.stores[0]));
+        container.appendChild(storeP1);
+    }
+
+    function isValidMove(player, pitNum) {
+        return (player == board.turn && board.pits[player][pitNum] != 0);
+    }
+
+    function isWinningPosition() {
+        return !(board.pits[0].reduce((partialSum, a) => partialSum + a, 0)
+        && board.pits[1].reduce((partialSum, a) => partialSum + a, 0));
+    }
+
+    function handleGameWin() {
+        const container = document.getElementById("win-container");
+        container.innerHTML = "";
+
+        container.appendChild(document.createTextNode("Game has ended! Retry?"));
+    }
+
+    function handleMoveFinish(currentPlayer, currentMoveNum) {
+        if (currentMoveNum != 6) {
+            if (board.pits[currentPlayer][currentMoveNum] == 1 && board.turn == currentPlayer) {
+                board.pits[currentPlayer][currentMoveNum] += board.pits[1 - currentPlayer][6 - currentMoveNum - 1];
+                board.pits[1 - currentPlayer][6 - currentMoveNum - 1] = 0;
+            }
+            board.turn = 1 - board.turn;
+        }
+    }
+
+    function playMove(currentPlayer, currentMoveNum, stones) {
+        if (currentMoveNum == 6) {
+            if (board.turn == currentPlayer) {
+                board.stores[currentPlayer]++;
+                if (stones == 1) handleMoveFinish(currentPlayer, currentMoveNum);
+                else playMove(1 - currentPlayer, 0, stones - 1);
+            } else {
+                playMove(1 - currentPlayer, 0, stones);
+            }
+        } else {
+            board.pits[currentPlayer][currentMoveNum]++;
+            if (stones == 1) handleMoveFinish(currentPlayer, currentMoveNum);
+            else playMove(currentPlayer, currentMoveNum + 1, stones - 1);
+        }
+    }
+
+    function tryToPlayMove(player, moveNum) {
+        if (!isValidMove(player, moveNum)) return;
+
+        moveNum = parseInt(moveNum);
+        var stones = board.pits[player][moveNum];
+        board.pits[player][moveNum] = 0;
+        playMove(player, moveNum + 1, stones);
+
+        if(isWinningPosition()) handleGameWin();
+
+        renderBoard();
+    }
+
+    initBoard();
+</script>
+
+{% endblock %}

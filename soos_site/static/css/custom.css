@@ -1,0 +1,30 @@
+/* custom.css */
+
+body {
+    background-color: #343a40; /* Dark gray background color */
+    color: #ffffff
+}
+
+.auto-height {
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    resize: none;
+    font-size: 16px;
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+    outline: none;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow: hidden; /* Hide the scroll bar */
+    height: 1000000px;
+}
+
+body .container {
+    background-color: #ffffff; /* White background for the container */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    color: #000000;
+}

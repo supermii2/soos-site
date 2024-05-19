@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Textstash{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+        <h1 class="text-center">Textstash</h1>
+        <p>Textstash is a simple tool to allow users to send each other text strings.</p>
+        <p>Simply <a href="/textstash/create">create</a> a stash with a title, send your friend the title, and use it to <a href="/textstash/read">read</a> your text!</p>
+        <p>Stashes are not private and not stored! It's recommended that you <a href="/textstash/delete">delete</a> your stashes after using them.</p>
+    </div>
+</div>
+{% endblock %}
